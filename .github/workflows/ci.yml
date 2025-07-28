@@ -34,14 +34,12 @@ jobs:
         run: |
           JOB_ID=${{ matrix.job_id }}
           ACCOUNTS='[
-          [],
           ["u31derajatispanas","8e43D64D6358104d2739","QEMFK62RXGJ2JY4W","2025-07-28 17:27:03.809"],
           ["Oluwatodi1962","8af3a30C9a96a4124f3c","TEOTZOHW3JAYB6WB","2025-07-28 17:27:17.840"],
           ["swkim09114900","998d14127Ff3f0E63D83","WBFZ4X3SZX4H7VBL","2025-07-28 17:27:41.581"],
           ["Lindaherlinaa5216","Ffd25B6DBC4cd272d79A","EH4OZIWKYEHJF4D5","2025-07-28 17:25:05.965"],
           ["cepitalove1195","86591279afdd39f5e0cb","4OWT25VX22K7G6VO","2025-07-28 17:27:06.712"],
-          ["kanagireddy2934","7EC8a1B665Fab6Cdf633","IJE5KMF356DYN2PA","2025-07-28 17:25:52.097"],
-
+          ["kanagireddy2934","7EC8a1B665Fab6Cdf633","IJE5KMF356DYN2PA","2025-07-28 17:25:52.097"]
           ]'
 
           LEN=$(echo $ACCOUNTS | jq 'length')
