@@ -117,10 +117,7 @@ import axios from 'axios';
     await page.click("//button[@aria-label='Open user navigation menu']");
     logger.info("登录成功");
 
-    await page.goto("https://github.com/settings/profile");
-    const href = await (await page.$x("//h1[@id='settings-header']/a")).evaluate(el => (el as HTMLAnchorElement).href);
-    const username = href.split("/").pop();
-    logger.info("用户名", username);
+    const username = GITHUB_USERNAME;
 
     const repoName = username;
     const branch = "master";
