@@ -191,7 +191,7 @@ import axios from 'axios';
         await page.goto(`https://github.com/${username}/${repoName}/actions`);
         await page.click("//input[@value='I understand my workflows, go ahead and enable them']");
         await page.waitForSelector("//input[@value='I understand my workflows, go ahead and enable them']", { hidden: true });
-        await updateFile("concurrency.yml", ".github/workflows/ci.yml");
+        // await updateFile("concurrency.yml", ".github/workflows/ci.yml");
         // await updateFile("frpc.exe");
     }
 

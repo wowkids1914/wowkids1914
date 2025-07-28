@@ -27,37 +27,73 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        job_id: [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
+        job_id: [0,1,2,3,4,5,6,7,8,9,10,11,12]
     steps:
       - uses: actions/checkout@v4
       - name: 设置环境变量
         run: |
           JOB_ID=${{ matrix.job_id }}
           ACCOUNTS='[
-          ["u31derajatispanas","8e43D64D6358104d2739","QEMFK62RXGJ2JY4W","2025-07-28 17:27:03.809"],
-          ["Oluwatodi1962","8af3a30C9a96a4124f3c","TEOTZOHW3JAYB6WB","2025-07-28 17:27:17.840"],
-          ["swkim09114900","998d14127Ff3f0E63D83","WBFZ4X3SZX4H7VBL","2025-07-28 17:27:41.581"],
-          ["Lindaherlinaa5216","Ffd25B6DBC4cd272d79A","EH4OZIWKYEHJF4D5","2025-07-28 17:25:05.965"],
-          ["cepitalove1195","86591279afdd39f5e0cb","4OWT25VX22K7G6VO","2025-07-28 17:27:06.712"],
-          ["kanagireddy2934","7EC8a1B665Fab6Cdf633","IJE5KMF356DYN2PA","2025-07-28 17:25:52.097"],
           [
-          "pritamraja873650",
-          "84B92aDfCFC03854AB94",
-          "QFF2P4VYRFC2Q6LF",
-          "2025-07-28 19:03:49.394"
+          "Yeison20051919",
+          "2367DAaB915125e7C4c1",
+          "HLP75TG6C4MWDICB",
+          "2025-07-28 20:31:33.407"
           ],
+          [
+          "sinkooooon8837",
+          "78118824a5D3F0c67389",
+          "A6KDZHCDAHYLO2OP",
+          "2025-07-28 20:31:19.777"
+          ],
+          [
+          "Unvy74656",
+          "96eF1e7635307dc5f0A4",
+          "NYAU7VTJPSSYDNIR",
+          "2025-07-28 20:32:10.269"
+          ],
+          [
+          "Natureholder6387",
+          "360CAc0Cd78477e75E63",
+          "3GKLBS5PWUOS4ZRK",
+          "2025-07-28 20:31:39.118"
+          ],
+          [
+          "OksankaLukianovets311",
+          "D4CC28997aAebbf36209",
+          "NTOGLQC7GR4ABL5J",
+          "2025-07-28 20:31:39.043"
+          ],
+          [
+          "SarMack137621",
+          "D3a3736F9cEb7c917989",
+          "WYEGW6LW6TOOODGQ",
+          "2025-07-28 20:31:15.117"
+          ],
+          [
+          "AryanSinghalOfficial9177",
+          "8D15BDd9abec2d4f91d8",
+          "UIPVW2B6GEXB63WS",
+          "2025-07-28 20:31:23.470"
+          ],
+          [
+          "Anima-OS-Dev292",
+          "4659025758f06765dC43",
+          "ZZUC6HWBLUQ25LOG",
+          "2025-07-28 20:31:29.956"
+          ],
+          
+          ["Oluwatodi1962","8af3a30C9a96a4124f3c","TEOTZOHW3JAYB6WB","2025-07-28 17:27:17.840"],
+          
+          ["cepitalove1195","86591279afdd39f5e0cb","4OWT25VX22K7G6VO","2025-07-28 17:27:06.712"],
+          
           [
           "DaniAnie2575",
           "9b0Eb30541A14a014f7f",
           "5OJXX32CGU3R4PDX",
           "2025-07-28 19:01:57.134"
           ],
-          [
-          "deborahbrouwer2025",
-          "25281C6196e432a2231e",
-          "PRBSAVW62AKDUM7W",
-          "2025-07-28 19:02:15.003"
-          ],
+          
           [
           "grggagandin117578",
           "AbEa88058bd060CAc2cC",
@@ -69,18 +105,6 @@ jobs:
           "3a636f0cA3de9914e851",
           "LQWOKFSPQLF2IZMW",
           "2025-07-28 19:01:49.670"
-          ],
-          [
-          "manuelscout8777662",
-          "B97A751Db33936AF3c2C",
-          "RLOESOB7PBLXME3S",
-          "2025-07-28 19:01:25.839"
-          ],
-          [
-          "freddykruege2025",
-          "dac8f87AE6b1e13B30C2",
-          "Q4RTM2NVCQJPOST5",
-          "2025-07-28 19:01:47.672"
           ]
           ]'
 
