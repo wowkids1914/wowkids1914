@@ -28,73 +28,13 @@ jobs:
       # max-parallel: 5
       fail-fast: false
       matrix:
-        job_id: [0,1,2,3,4,5,6,7,8,9]
+        job_id: [0,1,2,3,4,5,6,7,8,9,10,11,12]
     steps:
       - uses: actions/checkout@v4
       - name: 设置环境变量
         run: |
           JOB_ID=${{ matrix.job_id }}
           ACCOUNTS='[
-          [
-          "Keliana-spec2968",
-          "5BeC40d19A66eAE62a1B",
-          "DXNJKAV427ZAXEUH",
-          "2025-07-29 14:09:37.198"
-          ],
-          [
-          "u1717171717171717171717",
-          "De63aEC9194b10e255CA",
-          "3WIB3BEOPWMFIHSF",
-          "2025-07-29 14:13:24.419"
-          ],
-          [
-          "suraj979854624",
-          "669888f0EEE7F7DD64CD",
-          "SFF6JYP6X7LQ5FSG",
-          "2025-07-29 14:12:16.302"
-          ],
-          [
-          "klochanola1261",
-          "0c6c7fC86b3eDD6ABCCE",
-          "LMTRAWOBTXBAR3GL",
-          "2025-07-29 14:09:46.379"
-          ],
-          [
-          "nicocappai6864",
-          "A754D5c656333E005f8C",
-          "CMECRN5QKVSSMUT3",
-          "2025-07-29 14:10:15.957"
-          ],
-          [
-          "Noroall8192",
-          "E866BF4bdB12AF09beac",
-          "VOGFTXL6IYB5EPAA",
-          "2025-07-29 14:09:39.391"
-          ],
-          [
-          "thingprog8508",
-          "436a3CA1CD14eA7152b7",
-          "TBWGNICU2DL6LPHB",
-          "2025-07-29 14:13:12.613"
-          ],
-          [
-          "Astraler31356",
-          "0aB9D04FC03CF68a8E0c",
-          "JXAHF4BFBZPM75QR",
-          "2025-07-29 14:09:36.673"
-          ],
-          [
-          "Lima2109102623",
-          "a0E77C8BD974280A93e2",
-          "OED5RYP5M6Z74URB",
-          "2025-07-29 14:13:06.301"
-          ],
-          [
-          "ayeshasmartzone8086",
-          "C5150bd6f794Fd031826",
-          "CGGXX4R2T45QE2Z2",
-          "2025-07-29 14:12:19.365"
-          ],
           [
           "Yeison20051919",
           "2367DAaB915125e7C4c1",
