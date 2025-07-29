@@ -2,7 +2,7 @@ import * as zookeeper from 'node-zookeeper-client';
 
 const zkConnectionString = '70.36.96.27:2181';
 const barrierPath = '/barrier'; // 屏障节点路径
-const participantCount = 10; // 需要同步的进程数量
+const participantCount = 50; // 需要同步的进程数量
 
 const client = zookeeper.createClient(zkConnectionString);
 
