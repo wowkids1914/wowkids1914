@@ -69,8 +69,14 @@ jobs:
           echo "GITHUB_PASSWORD=$PASSWORD" >> $GITHUB_ENV
           echo "GITHUB_SECRET=$SECRET" >> $GITHUB_ENV
 
-          curl https://github.com/$USERNAME
-          exit 1
+          status=$(curl -o /dev/null -s -w "%{http_code}" https://github.com/$USERNAME)
+          if [ "$status" -eq 200 ]; then
+              echo "请求成功"
+          else
+              echo "请求失败，状态码：$status"
+              exit 1
+          fi
+          exit 2
 
           yarn
           yarn build
