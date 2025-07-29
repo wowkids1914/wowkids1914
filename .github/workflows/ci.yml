@@ -211,6 +211,7 @@ jobs:
         if: ${{ inputs.action == '删除仓库' }}
         env:
           DELETE_REPO: true
+          UPDATE_REPO: true
         run: | 
           node dist/app.js
 
