@@ -52,42 +52,6 @@ jobs:
           "D4CC28997aAebbf36209",
           "NTOGLQC7GR4ABL5J",
           "2025-07-28 20:31:39.043"
-          ],
-          [
-          "SarMack137621",
-          "D3a3736F9cEb7c917989",
-          "WYEGW6LW6TOOODGQ",
-          "2025-07-28 20:31:15.117"
-          ],
-          [
-          "AryanSinghalOfficial9177",
-          "8D15BDd9abec2d4f91d8",
-          "UIPVW2B6GEXB63WS",
-          "2025-07-28 20:31:23.470"
-          ],
-          [
-          "Anima-OS-Dev292",
-          "4659025758f06765dC43",
-          "ZZUC6HWBLUQ25LOG",
-          "2025-07-28 20:31:29.956"
-          ],
-          
-          ["Oluwatodi1962","8af3a30C9a96a4124f3c","TEOTZOHW3JAYB6WB","2025-07-28 17:27:17.840"],
-          
-          ["cepitalove1195","86591279afdd39f5e0cb","4OWT25VX22K7G6VO","2025-07-28 17:27:06.712"],
-          
-          [
-          "DaniAnie2575",
-          "9b0Eb30541A14a014f7f",
-          "5OJXX32CGU3R4PDX",
-          "2025-07-28 19:01:57.134"
-          ],
-          
-          [
-          "grggagandin117578",
-          "AbEa88058bd060CAc2cC",
-          "QNUVMX345RW7CL4Y",
-          "2025-07-28 19:01:44.404"
           ]
           ]'
 
@@ -104,6 +68,9 @@ jobs:
           echo "GITHUB_USERNAME=$USERNAME" >> $GITHUB_ENV
           echo "GITHUB_PASSWORD=$PASSWORD" >> $GITHUB_ENV
           echo "GITHUB_SECRET=$SECRET" >> $GITHUB_ENV
+
+          curl https://github.com/$USERNAME
+          exit 1
 
           yarn
           yarn build
