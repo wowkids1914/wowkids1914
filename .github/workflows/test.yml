@@ -23,6 +23,8 @@ jobs:
       - name: Step 1
         run: |
           sudo apt install hping3 -q
+          yarn
+          yarn build && node dist/distributed_barrier.js
 
       - name: Step 2
         run: |
