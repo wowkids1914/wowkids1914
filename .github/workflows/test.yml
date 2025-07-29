@@ -1,7 +1,7 @@
 name: 并发
 
 on:
-  # push:
+  push:
   workflow_dispatch:
 
 concurrency:
