@@ -6,6 +6,13 @@ const participantCount = 10; // 需要同步的进程数量
 
 const client = zookeeper.createClient(zkConnectionString);
 
+process.on('SIGTERM', async () => {
+    // timeout docker-compose down/stop 会触发 SIGTERM 信号
+    console.log('SIGTERM: 终止请求');
+    client.close();
+    process.exit();
+});
+
 function enterBarrier(client: zookeeper.Client, barrierPath: string, participantCount: number): Promise<void> {
   return new Promise((resolve, reject) => {
     // 创建屏障父节点（如不存在）
