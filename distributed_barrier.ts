@@ -33,6 +33,13 @@ const participantCount = argv.count;
 
 const client = zookeeper.createClient(zkConnectionString);
 
+process.on('SIGINT', async () => {
+    // Ctrl+C
+    console.log('SIGINT: 用户中断');
+    client.close();
+    process.exit();
+});
+
 process.on('SIGTERM', async () => {
     // timeout docker-compose down/stop 会触发 SIGTERM 信号
     console.log('SIGTERM: 终止请求');
