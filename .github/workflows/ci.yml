@@ -88,7 +88,7 @@ jobs:
           "AbEa88058bd060CAc2cC",
           "QNUVMX345RW7CL4Y",
           "2025-07-28 19:01:44.404"
-          ],
+          ]
           ]'
 
           LEN=$(echo $ACCOUNTS | jq 'length')
