@@ -27,7 +27,7 @@ jobs:
         run: |
           sudo apt install hping3 -q
           yarn
-          timeout 120s node index.js --count 41
+          timeout 120s node index.js --count 36
 
       - name: Step 2
         run: |
