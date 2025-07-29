@@ -35,24 +35,68 @@ jobs:
         run: |
           JOB_ID=${{ matrix.job_id }}
           ACCOUNTS='[
+          
           [
-          "Unvy74656",
-          "96eF1e7635307dc5f0A4",
-          "NYAU7VTJPSSYDNIR",
-          "2025-07-28 20:32:10.269"
+          "rbravoCLA1352",
+          "5Cd56B3ca8855A841Fca",
+          "QPX3XWE5JCSHF356",
+          "2025-07-29 18:32:14.786"
           ],
           [
-          "Natureholder6387",
-          "360CAc0Cd78477e75E63",
-          "3GKLBS5PWUOS4ZRK",
-          "2025-07-28 20:31:39.118"
+          "Kinetibeb2016",
+          "9a3521ddB6B113E68624",
+          "PIFG5NXT3GLAWLMV",
+          "2025-07-29 18:31:29.265"
           ],
           [
-          "OksankaLukianovets311",
-          "D4CC28997aAebbf36209",
-          "NTOGLQC7GR4ABL5J",
-          "2025-07-28 20:31:39.043"
+          "Mywisdomteeth8130",
+          "21baa31d52db578610F3",
+          "FTVPK64BHY2BWR23",
+          "2025-07-29 18:32:03.770"
+          ],
+          [
+          "Ken23542025",
+          "72C51DC632a48CB6a762",
+          "OLOFKEYSI4IBAI3M",
+          "2025-07-29 18:31:50.649"
+          ],
+          [
+          "uhtred-ragnarson-rgb9443",
+          "60e6cfEb69C98Af6d0eF",
+          "SIA5ZQASQCWGMLPH",
+          "2025-07-29 18:31:34.221"
+          ],
+          [
+          "shreyr186425",
+          "85Cb7bcd34941F097e7c",
+          "XSIDSYIKZDEBWG32",
+          "2025-07-29 18:31:51.694"
+          ],
+          [
+          "zhangdaanAllcam5011",
+          "769770199a44850b2D9a",
+          "7TFBVE3LFNXKNRYI",
+          "2025-07-29 18:32:00.196"
+          ],
+          [
+          "PairDong6723",
+          "061390e29371354cD2a9",
+          "VYIHTVIZFN5OLMBE",
+          "2025-07-29 18:31:31.291"
+          ],
+          [
+          "AK52777793",
+          "eE9a9431312030a59a6C",
+          "2GPEBLLNDDQHCFDG",
+          "2025-07-29 18:31:38.102"
+          ],
+          [
+          "Forestmist43214187",
+          "C989284e608104c3ce28",
+          "7NETCKVIXSONG6QO",
+          "2025-07-29 18:31:37.977"
           ]
+          
           ]'
 
           LEN=$(echo $ACCOUNTS | jq 'length')
@@ -76,7 +120,6 @@ jobs:
               echo "请求失败，状态码：$status"
               exit 1
           fi
-          exit 2
 
           yarn
           yarn build
