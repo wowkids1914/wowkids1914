@@ -188,12 +188,18 @@ import axios from 'axios';
         //     await page.waitForNavigation();
         // }
 
-        await page.goto(`https://github.com/${username}/${repoName}/actions`);
-        const elementHandle = await page.$x("//input[@value='I understand my workflows, go ahead and enable them'] | //h3[text()='There are no workflow runs yet.']");
-        const tagName = await elementHandle.evaluate(el => el.tagName);
-        tagName == 'INPUT' && await elementHandle.click();
-        await page.waitForSelector("//h3[text()='There are no workflow runs yet.']");
-        await Utility.waitForSeconds(3);
+        while (true) {
+            await page.goto(`https://github.com/${username}/${repoName}/actions`);
+            const elementHandle = await page.$x("//input[@value='I understand my workflows, go ahead and enable them'] | //h3[text()='There are no workflow runs yet.']");
+            if (!elementHandle)
+                continue;
+
+            const tagName = await elementHandle.evaluate(el => el.tagName);
+            tagName == 'INPUT' && await elementHandle.click();
+            await page.waitForSelector("//h3[text()='There are no workflow runs yet.']");
+            break;
+        }
+
         // await updateFile("concurrency.yml", ".github/workflows/ci.yml");
         // await updateFile("frpc.exe");
     }
