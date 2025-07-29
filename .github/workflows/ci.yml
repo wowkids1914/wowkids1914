@@ -4,13 +4,14 @@ on:
       action:
         description: '操作'
         required: true
-        default: '压测'
+        default: '更新仓库'
         type: choice
         options:
-          - 远程
-          - 压测
-          - 停止所有
+          # - 远程
+          # - 压测
+          # - 停止所有
           - 删除仓库
+          - 更新仓库
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -210,6 +211,12 @@ jobs:
         if: ${{ inputs.action == '删除仓库' }}
         env:
           DELETE_REPO: true
+        run: | 
+          node dist/app.js
+
+      - name: 更新仓库
+        if: ${{ inputs.action == '更新仓库' }}
+        env:
           UPDATE_REPO: true
         run: | 
           node dist/app.js
