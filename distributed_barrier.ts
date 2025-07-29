@@ -9,7 +9,7 @@ const client = zookeeper.createClient(zkConnectionString);
 process.on('SIGTERM', async () => {
     // timeout docker-compose down/stop 会触发 SIGTERM 信号
     console.log('SIGTERM: 终止请求');
-    // client.close();
+    client.close();
     process.exit();
 });
 
