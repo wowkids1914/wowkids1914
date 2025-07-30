@@ -9,12 +9,17 @@ const validData: [string, string][] = [];
 // 检查用户名页面是否可访问的异步函数
 async function checkUser(username: string): Promise<boolean> {
     try {
-        const resp = await axios.get(`https://github.com/${username}`, {
+        const { status } = await axios.get(`https://github.com/${username}`, {
             validateStatus: () => true, // 不抛异常
             timeout: 5000,
         });
-        console.log("###########", `https://github.com/${username}`, resp.status);
-        return resp.status === 200;
+
+        console.log(`https://github.com/${username}`, status);
+
+        if (status != 200 && status != 404)
+            process.exit();
+
+        return status === 200;
     } catch (error) {
         return false;
     }
