@@ -48,6 +48,7 @@ jobs:
       - name: 设置环境变量
         run: |
           JOB_ID=${{ matrix.job_id }}
+          JOB_ID=$((JOB_ID - 1))
           ACCOUNTS=$(cat data.json)
 
           LEN=$(echo $ACCOUNTS | jq 'length')
