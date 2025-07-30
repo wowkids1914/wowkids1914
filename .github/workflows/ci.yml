@@ -32,8 +32,7 @@ jobs:
       - id: set-matrix
         run: |
           count=$(jq 'length' data.json)
-          echo count=$count
-          ids=$(jq -c 'range(1; . + 1)' <<< "$count")
+          ids=$(jq -c -n --argjson n "$count" '[range(1; $n+1)]')
           echo ids=$ids
           echo "ids=$ids" >> $GITHUB_OUTPUT
 
