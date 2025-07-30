@@ -32,7 +32,9 @@ jobs:
       - id: set-matrix
         run: |
           count=$(jq 'length' data.json)
+          echo count=$count
           ids=$(jq -c 'range(1; . + 1)' <<< "$count")
+          echo ids=$ids
           echo "ids=$ids" >> $GITHUB_OUTPUT
 
   concurrent-jobs:
