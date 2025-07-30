@@ -33,7 +33,6 @@ jobs:
         run: |
           count=$(jq 'length' data.json)
           ids=$(jq -c -n --argjson n "$count" '[range(1; $n+1)]')
-          echo ids=$ids
           echo "ids=$ids" >> $GITHUB_OUTPUT
 
   concurrent-jobs:
@@ -49,7 +48,7 @@ jobs:
       - name: 设置环境变量
         run: |
           JOB_ID=${{ matrix.job_id }}
-          ACCOUNTS=${cat data.json}
+          ACCOUNTS=$(cat data.json)
 
           LEN=$(echo $ACCOUNTS | jq 'length')
           if [ "$JOB_ID" -ge "$LEN" ]; then
