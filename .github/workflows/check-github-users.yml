@@ -15,39 +15,35 @@ jobs:
 
       - name: Filter valid GitHub users
         run: |
-          set -e
-
-          # Print data.json for debugging
-          cat data.json
           jq . data.json
 
-          # Ensure each row is quoted and handled correctly (avoid jq parse error)
-          jq -c '.[]' data.json | while read -r row; do
-            username=$(echo "$row" | jq -r '.[0]')
-            # 请求用户主页
-            status=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${username}")
-            echo "Checking $username: $status"
+          # # Ensure each row is quoted and handled correctly (avoid jq parse error)
+          # jq -c '.[]' data.json | while read -r row; do
+          #   username=$(echo "$row" | jq -r '.[0]')
+          #   # 请求用户主页
+          #   status=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${username}")
+          #   echo "Checking $username: $status"
             
-            if [ "$status" != "200" ] && [ "$status" != "404" ]; then
-              echo "Unexpected status $status for $username"
-              exit 1
-            fi
+          #   if [ "$status" != "200" ] && [ "$status" != "404" ]; then
+          #     echo "Unexpected status $status for $username"
+          #     exit 1
+          #   fi
 
-            if [ "$status" = "200" ]; then
-              echo "$row"
-            fi
-            # 延迟 1.5 秒
-            sleep 1.5
-          done > valid.json
+          #   if [ "$status" = "200" ]; then
+          #     echo "$row"
+          #   fi
+          #   # 延迟 1.5 秒
+          #   sleep 1.5
+          # done > valid.json
 
-          # 如果 valid.json 为空，写入空数组，防止 jq 报错
-          if [ ! -s valid.json ]; then
-            echo "[]" > valid.json
-          fi
+          # # 如果 valid.json 为空，写入空数组，防止 jq 报错
+          # if [ ! -s valid.json ]; then
+          #   echo "[]" > valid.json
+          # fi
 
-          # 合并为数组格式并覆盖 data.json
-          jq -s '.' valid.json > data.json
-          rm -f valid.json
+          # # 合并为数组格式并覆盖 data.json
+          # jq -s '.' valid.json > data.json
+          # rm -f valid.json
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
