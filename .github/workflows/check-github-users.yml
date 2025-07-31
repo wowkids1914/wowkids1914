@@ -4,17 +4,14 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - '.github/workflows/check-github-users.yml'
       - 'data.json'
 
 jobs:
   check-users:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+      - uses: actions/checkout@v4
 
       - name: Filter valid GitHub users
         run: |
