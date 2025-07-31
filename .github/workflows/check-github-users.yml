@@ -17,24 +17,25 @@ jobs:
         run: |
           set -e
           tmpfile=$(mktemp)
-          > $tmpfile
-          for item in $(jq -c '.[]' data.json); do
+          > "$tmpfile"
+          jq -c '.[]' data.json | while read -r item; do
             username=$(echo "$item" | jq -r '.[0]')
             echo "Checking user: $username"
             if curl -s -o /dev/null -w "%{http_code}" "https://github.com/${username}" | grep -q "^2"; then
-              echo "$item" >> $tmpfile
+              echo "$item" >> "$tmpfile"
             else
               echo "User $username does not exist"
             fi
           done
-          if [ -s $tmpfile ]; then
-            jq -s '.' $tmpfile > data.json
+
+          if [ -s "$tmpfile" ]; then
+            jq -s '.' "$tmpfile" > data.json
           else
             echo '[]' > data.json
           fi
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 筛选有效 GitHub 用户
-          file_pattern: data.json
+      # - name: Commit changes
+      #   uses: stefanzweifel/git-auto-commit-action@v5
+      #   with:
+      #     commit_message: 筛选有效 GitHub 用户
+      #     file_pattern: data.json
