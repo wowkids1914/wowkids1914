@@ -15,18 +15,24 @@ jobs:
 
       - name: Filter valid GitHub users
         run: |
-          #!/usr/bin/env bash
           set -e
-
-          # 读取 data.json 并处理
-          jq -c '.[]' data.json | while read -r item; do
+          tmpfile=$(mktemp)
+          echo "[" > $tmpfile
+          first=1
+          for item in $(jq -c '.[]' data.json); do
             username=$(echo "$item" | jq -r '.[0]')
-            # 检查 GitHub 用户页面是否存在
+            echo "Checking user: $username"
             if curl -s -o /dev/null -w "%{http_code}" "https://github.com/${username}" | grep -q "^2"; then
-              echo "$item"
+              echo "User $username exists"
+              if [ $first -eq 0 ]; then echo "," >> $tmpfile; fi
+              echo "$item" >> $tmpfile
+              first=0
+            else
+              echo "User $username does not exist"
             fi
-          done | jq -s '.' > data.filtered.json
-          mv data.filtered.json data.json
+          done
+          echo "]" >> $tmpfile
+          mv $tmpfile data.json
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
