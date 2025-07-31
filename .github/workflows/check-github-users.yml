@@ -15,7 +15,9 @@ jobs:
 
       - name: Filter valid GitHub users
         run: |
-          set -e
+          cat data.json
+          jq . data.json
+
           jq -c '.[]' data.json | while read -r row; do
             username=$(echo "$row" | jq -r '.[0]')
             # 请求用户主页
