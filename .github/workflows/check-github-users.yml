@@ -1,0 +1,47 @@
+name: Check GitHub Users
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data.json'
+
+jobs:
+  check-users:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Filter valid GitHub users
+        run: |
+          set -e
+          jq -c '.[]' data.json | while read -r row; do
+            username=$(echo "$row" | jq -r '.[0]')
+            # 请求用户主页
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${username}")
+            echo "Checking $username: $status"
+            
+            if [ "$status" != "200" ] && [ "$status" != "404" ]; then
+              echo "Unexpected status $status for $username"
+              exit 1
+            fi
+
+            if [ "$status" = "200" ]; then
+              echo "$row"
+            fi
+            # 延迟 1.5 秒
+            sleep 1.5
+          done > valid.json
+          # 把有效用户写回 data.json
+          jq -s '.' valid.json > data.json
+          rm -f valid.json
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 筛选有效 GitHub 用户
+          file_pattern: data.json
