@@ -1,7 +1,7 @@
 on:
   push:
-    paths:
-      - '.github/workflows/download.yml'
+    # paths:
+    #   - '.github/workflows/download.yml'
   workflow_dispatch:
 
 concurrency:
