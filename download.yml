@@ -10,7 +10,7 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 270
+  TASK_COUNT: 205
 
 jobs:
   prepare-matrix:
