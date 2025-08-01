@@ -39,7 +39,7 @@ jobs:
     needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
-      # max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         job_id: ${{ fromJson(needs.prepare-matrix.outputs.ids) }}
