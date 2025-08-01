@@ -100,6 +100,7 @@ import axios from 'axios';
     });
 
     const [page] = await browser.pages();
+    await page.setCacheEnabled(false);
     await page.goto("https://github.com/login");
 
     await page.type("//input[@id='login_field']", GITHUB_USERNAME);
