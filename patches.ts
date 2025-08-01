@@ -45,14 +45,16 @@ Page.prototype.goto = async function (
     let retries = options?.retries ?? 5;
     while (retries-- > 0) {
         try {
+            logger.info("⏳goto", url, (options && JSON.stringify(options)) ?? "");
+
             const response = await originalGoto.call(this, url, options);
             if (response.ok())
                 return response;
 
-            logger.error("goto", url, response.status(), STATUS_CODES[response.status()]);
+            logger.error("❌goto", url, (options && JSON.stringify(options)) ?? "", response.status(), STATUS_CODES[response.status()]);
         }
         catch (e) {
-            logger.error("goto", url, e.message);
+            logger.error("❌goto", url, (options && JSON.stringify(options)) ?? "", e.message);
         }
 
         await Utility.waitForSeconds(1);
@@ -64,7 +66,7 @@ Page.prototype.waitForNavigation = async function (
     this: Page,
     options?: WaitForOptions
 ): Promise<HTTPResponse | null> {
-    logger.info("⏳waitForNavigation", this.url());
+    logger.info("⏳waitForNavigation", this.url(), (options && JSON.stringify(options)) ?? "");
 
     try {
         const response = await originalWaitForNavigation.call(this, options);
@@ -72,7 +74,7 @@ Page.prototype.waitForNavigation = async function (
         if (response.ok())
             logger.info("✅waitForNavigation", this.url());
         else
-            logger.error("❌waitForNavigation", this.url(), response.status(), STATUS_CODES[response.status()]);
+            logger.error("❌waitForNavigation", this.url(), (options && JSON.stringify(options)) ?? "", response.status(), STATUS_CODES[response.status()]);
 
         return response;
     }
@@ -86,7 +88,7 @@ Page.prototype.waitForNetworkIdle = async function (
     this: Page,
     options?: WaitForNetworkIdleOptions
 ): Promise<void> {
-    logger.info("⏳waitForNetworkIdle", this.url());
+    logger.info("⏳waitForNetworkIdle", this.url(), (options && JSON.stringify(options)) ?? "");
 
     try {
         await originalWaitForNetworkIdle.call(this, options);
