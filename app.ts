@@ -122,8 +122,8 @@ import axios from 'axios';
 
     await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
 
-    await page.waitForNetworkIdle();
-    logger.info("登录成功", "https://github.com/" + GITHUB_USERNAME);
+    await Utility.waitForFunction(async () => page.url() == "https://github.com/");
+    logger.info("登录成功", GITHUB_USERNAME);
 
     const username = GITHUB_USERNAME;
 
