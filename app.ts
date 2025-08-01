@@ -8,6 +8,7 @@ import { authenticator } from 'otplib';
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
+import githubAnnotation from './annotations.js';
 
 (async () => {
     const { GITHUB_USERNAME, GITHUB_PASSWORD, GITHUB_SECRET, DELETE_REPO, UPDATE_REPO, REMOTE, STRESS_TEST, Stop_All_PIPELINES } = process.env;
@@ -77,17 +78,21 @@ import axios from 'axios';
         fs.unlinkSync(path);
     }
 
-    process.on('SIGTERM', async () => {
-        // timeout docker-compose down/stop 会触发 SIGTERM 信号
-        logger.info('SIGTERM: 终止请求');
+    async function screenshotAllPages() {
+        const timestamp = new Date().toString().replace(/[:.]/g, '-');
 
         const pages = await browser.pages();
-        for (const page of pages) {
-            Utility.appendStepSummary(page.url());
-            await createGithubIssueWithScreenshot(page);
+        logger.info("screenshotAllPages", pages.length);
+        for (let i = 0; i < pages.length; i++) {
+            await pages[i].screenshot({ path: `./images/chrome-${timestamp}-${i + 1}.png` }).catch(logger.error);
         }
+    }
 
-        process.exit(1);
+    process.on('SIGTERM', async () => {
+        // timeout docker-compose down/stop 会触发 SIGTERM 信号
+        githubAnnotation('error', 'SIGTERM: 终止请求');
+        await screenshotAllPages();
+        process.exit();
     });
 
     process.on("uncaughtException", (e: Error) => {
@@ -95,15 +100,9 @@ import axios from 'axios';
     });
 
     process.on("unhandledRejection", async (e: Error) => {
-        logger.error("未处理的拒绝", e);
-
-        const pages = await browser.pages();
-        for (const page of pages) {
-            Utility.appendStepSummary(page.url());
-            await createGithubIssueWithScreenshot(page);
-        }
-
-        process.exit(1);
+        githubAnnotation('error', "未处理的拒绝: " + (e.stack || e));
+        await screenshotAllPages();
+        process.exit();
     });
 
     const [page] = await browser.pages();
