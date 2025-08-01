@@ -111,3 +111,10 @@ jobs:
           UPDATE_REPO: true
         run: | 
           timeout -k 30s 300s node dist/app.js
+
+      - name: 上传 images 文件夹
+        if: always() && hashFiles('images/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: images-${{ matrix.job_id }}
+          path: images/
