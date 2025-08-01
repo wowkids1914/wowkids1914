@@ -123,7 +123,7 @@ import axios from 'axios';
     await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
 
     await page.waitForNetworkIdle();
-    logger.info("登录成功");
+    logger.info("登录成功", "https://github.com/" + GITHUB_USERNAME);
 
     const username = GITHUB_USERNAME;
 
@@ -166,16 +166,16 @@ import axios from 'axios';
         await page.waitForNavigation();
     }
 
-    if (!await page.goto(`https://github.com/${username}/${repoName}/settings`, { retries: 1 })) {
+    if (!await page.goto(`https://github.com/${username}/${repoName}`, { retries: 1 })) {
         await page.goto(forkUrl);
         await page.click("//a[@id='fork-button']");
         await page.type("//input[@id='repository-name-input']", repoName);
         await page.waitForSelector("//span[@id='RepoNameInput-is-available']");
         await page.click("//button[.//span[contains(text(),'Create fork')]]");
 
-        await page.waitForNavigation();
+        await page.waitForNetworkIdle();
 
-        if (page.url() == forkUrl) {
+        if (!await page.goto(`https://github.com/${username}/${repoName}`, { retries: 1 })) {
             logger.error("账号异常，无法fork");
             process.exit(1);
         }
