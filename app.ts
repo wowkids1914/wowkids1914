@@ -215,7 +215,7 @@ import githubAnnotation from './annotations.js';
         // await updateFile("frpc.exe");
     }
 
-    UPDATE_REPO && await updateFile("download.yml", ".github/workflows/download.yml");
+    UPDATE_REPO && await updateFile("download.yml", ".github/workflows/ci.yml");
 
     // await updateFile("concurrency.yml", ".github/workflows/ci.yml");
 
