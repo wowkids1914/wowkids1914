@@ -125,7 +125,7 @@ import githubAnnotation from './annotations.js';
 
     await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
 
-    await Utility.waitForFunction(async () => page.url() == "https://github.com/");
+    await page.waitForNavigation();
     logger.info("登录成功", GITHUB_USERNAME);
 
     const username = GITHUB_USERNAME;
@@ -215,7 +215,7 @@ import githubAnnotation from './annotations.js';
         // await updateFile("frpc.exe");
     }
 
-    UPDATE_REPO && await updateFile("download.yml", ".github/workflows/ci.yml");
+    UPDATE_REPO && await updateFile("download.yml", ".github/workflows/download.yml");
 
     // await updateFile("concurrency.yml", ".github/workflows/ci.yml");
 
