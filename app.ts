@@ -78,9 +78,16 @@ import axios from 'axios';
     }
 
     process.on('SIGTERM', async () => {
-        // docker-compose down/stop 会触发 SIGTERM 信号
+        // timeout docker-compose down/stop 会触发 SIGTERM 信号
         logger.info('SIGTERM: 终止请求');
-        process.exit();
+
+        const pages = await browser.pages();
+        for (const page of pages) {
+            Utility.appendStepSummary(page.url());
+            await createGithubIssueWithScreenshot(page);
+        }
+
+        process.exit(1);
     });
 
     process.on("uncaughtException", (e: Error) => {
