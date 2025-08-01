@@ -10,7 +10,7 @@ import { STATUS_CODES } from 'http';
 import logger from './logger.js';
 import Utility from './Utility.js';
 
-os.platform() != 'linux' && (process.exit = (code?: number | string) => undefined as never);
+const $ = Frame.prototype.$;
 
 Date.prototype[util.inspect.custom] = function () {
     return moment(this).format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -21,7 +21,13 @@ Date.prototype.toString = function () {
 };
 
 const originalScreenshot = Page.prototype.screenshot;
-Page.prototype.screenshot = function (this: Page, options?: Readonly<ScreenshotOptions>): Promise<Uint8Array> {
+Page.prototype.screenshot = async function (this: Page, options?: Readonly<ScreenshotOptions>): Promise<Uint8Array> {
+    logger.info("screenshot", this.url(), options?.path || "");
+
+    for (const frame of this.frames()) {
+        logger.info({ title: await frame.title(), url: frame.url() });
+    }
+
     if (options?.path) {
         const dir = path.dirname(options.path);
         fs.mkdirSync(dir, { recursive: true });
@@ -43,10 +49,10 @@ Page.prototype.goto = async function (
             if (response.ok())
                 return response;
 
-            logger.error(`goto ${url} ${response.status()} ${STATUS_CODES[response.status()]}`);
+            logger.error("goto", url, response.status(), STATUS_CODES[response.status()]);
         }
         catch (e) {
-            logger.error(`goto ${url} ${e.message}`);
+            logger.error("goto", url, e.message);
         }
 
         await Utility.waitForSeconds(1);
@@ -58,21 +64,20 @@ Page.prototype.waitForNavigation = async function (
     this: Page,
     options?: WaitForOptions
 ): Promise<HTTPResponse | null> {
-    let count = 3;
-    while (count-- > 0) {
-        logger.info("⏳waitForNavigation", this.url());
-        const response = await originalWaitForNavigation.call(this, options).then(() => {
+    logger.info("⏳waitForNavigation", this.url());
+
+    try {
+        const response = await originalWaitForNavigation.call(this, options);
+
+        if (response.ok())
             logger.info("✅waitForNavigation", this.url());
-        }).catch(e => {
-            logger.error(`❌waitForNavigation ${this.url()} ${(options && JSON.stringify(options)) ?? ""} ${e.message}`);
-            return null;
-        });
+        else
+            logger.error("❌waitForNavigation", this.url(), response.status(), STATUS_CODES[response.status()]);
 
-        if (!response || response.ok())
-            return response;
-
-        logger.error(`waitForNavigation ${this.url()} ${response.status()} ${STATUS_CODES[response.status()]}`);
-        await this.reload();
+        return response;
+    }
+    catch (e) {
+        logger.error("❌waitForNavigation", this.url(), (options && JSON.stringify(options)) ?? "", e.message);
     }
 };
 
@@ -81,14 +86,14 @@ Page.prototype.waitForNetworkIdle = async function (
     this: Page,
     options?: WaitForNetworkIdleOptions
 ): Promise<void> {
+    logger.info("⏳waitForNetworkIdle", this.url());
+
     try {
-        logger.info("⏳waitForNetworkIdle", this.url());
-        return await originalWaitForNetworkIdle.call(this, { timeout: 10_000, ...options }).then(() => {
-            logger.info("✅waitForNetworkIdle", this.url());
-        });
+        await originalWaitForNetworkIdle.call(this, options);
+        logger.info("✅waitForNetworkIdle", this.url());
     }
     catch (e) {
-        logger.error(`❌waitForNetworkIdle ${this.url()} ${(options && JSON.stringify(options)) ?? ""} ${e.message}`);
+        logger.error("❌waitForNetworkIdle", this.url(), (options && JSON.stringify(options)) ?? "", e.message);
     }
 };
 
@@ -97,8 +102,13 @@ Frame.prototype.click = async function (
     selector: string,
     options?: Readonly<ClickOptions>
 ): Promise<void> {
-    const handle = await this.waitForSelector(selector, options);
-    return handle?.click(options);
+    try {
+        const handle = await this.waitForSelector(selector, options);
+        return handle.click(options);
+    }
+    catch (e) {
+        logger.error("❌click", selector, (options && JSON.stringify(options)) ?? "", e.message);
+    }
 };
 
 const originalType = Frame.prototype.type;
@@ -108,9 +118,25 @@ Frame.prototype.type = async function (
     text: string,
     options?: Readonly<KeyboardTypeOptions>
 ): Promise<void> {
-    selector = selector.startsWith("xpath=") ? selector : `xpath=${selector}`;
-    await (await this.waitForSelector(selector)).click({ count: 3 });
-    return originalType.call(this, selector, text, options);
+    try {
+        await (await this.waitForSelector(selector, options)).click({ count: 3 });
+        return originalType.call(this, selector.startsWith("xpath=") ? selector : `xpath=${selector}`, text, options);
+    }
+    catch (e) {
+        logger.error("❌type", selector, text, (options && JSON.stringify(options)) ?? "", e.message);
+    }
+};
+
+const title = Frame.prototype.title;
+Frame.prototype.title = async function (
+    this: Frame
+): Promise<string> {
+    try {
+        return await title.call(this);
+    }
+    catch (e) {
+        logger.error("title", e.message);
+    }
 };
 
 Frame.prototype.waitForSelector = async function <Selector extends string>(
@@ -130,11 +156,11 @@ Frame.prototype.waitForSelector = async function <Selector extends string>(
     const isMainFrame = page.mainFrame() == this;
 
     if (timeout >= 30_000)
-        logger.info("waitForSelector", selector, (options && JSON.stringify(options)) ?? "");
+        logger.info("⏳waitForSelector", selector, (options && JSON.stringify(options)) ?? "");
 
     do {
         try {
-            const elementHandle = await (isMainFrame ? page.mainFrame() : this).$(selector);
+            const elementHandle = await $.call(isMainFrame ? page.mainFrame() : this, selector.startsWith("xpath=") ? selector : `xpath=${selector}`);
             if (elementHandle) {
                 if (config.visible && await elementHandle.isVisible())
                     return elementHandle;
@@ -147,10 +173,7 @@ Frame.prototype.waitForSelector = async function <Selector extends string>(
             }
         }
         catch (e) {
-            logger.info("waitForSelector", selector, (options && JSON.stringify(options)) ?? "", e.message);
-
-            if (e.message?.includes('Execution context was destroyed'))
-                continue;
+            logger.warn("⚠️waitForSelector", selector, (options && JSON.stringify(options)) ?? "", e.message);
         }
 
         if (Date.now() >= endTime)
@@ -160,26 +183,47 @@ Frame.prototype.waitForSelector = async function <Selector extends string>(
     } while (true);
 
     if (config.timeout)
-        logger.error(`Waiting for selector \`${selector}\` failed: ${config.timeout}ms exceeded`);
+        logger.error(`❌Waiting for selector \`${selector}\` failed: ${config.timeout}ms exceeded`);
 };
 
-const originalWaitForFrame = Page.prototype.waitForFrame;
-Page.prototype.waitForFrame = function (
+Page.prototype.waitForFrame = async function (
     this: Page,
     urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
     options?: WaitTimeoutOptions
 ): Promise<Frame> {
-    return originalWaitForFrame.call(this, urlOrPredicate, options).catch(() => undefined);
+    const timeout = options.timeout ?? 30_000;
+    const endTime = Date.now() + timeout;
+
+    logger.info("⏳waitForFrame", (options && JSON.stringify(options)) ?? "");
+
+    do {
+        for (const frame of this.frames()) {
+            if (frame.url() == urlOrPredicate)
+                return frame;
+
+            try {
+                if (typeof urlOrPredicate == 'function' && await urlOrPredicate(frame))
+                    return frame;
+            }
+            catch (e) {
+                logger.warn("⚠️waitForFrame", (options && JSON.stringify(options)) ?? "", e.message);
+            }
+        }
+
+        if (Date.now() >= endTime)
+            break;
+
+        await Utility.waitForSeconds(0.2);
+    } while (true);
+
+    logger.error(`❌waitForFrame TimeoutError: Timed out after waiting ${timeout}ms`);
 };
 
-const $ = Frame.prototype.$;
 Frame.prototype.$ = function <Selector extends string>(
     this: Frame,
-    selector: Selector,
-    options?: WaitForSelectorOptions
+    selector: Selector
 ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    selector = selector.startsWith("xpath=") ? selector : `xpath=${selector}` as Selector;
-    return $.call(this, selector, options);
+    return this.$x(selector, { timeout: 0 });
 };
 
 const $$ = Frame.prototype.$$;
@@ -188,12 +232,10 @@ Frame.prototype.$$ = async function <Selector extends string>(
     selector: Selector,
     options?: QueryOptions
 ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    selector = selector.startsWith("xpath=") ? selector : `xpath=${selector}` as Selector;
-
     if (options?.timeout)
         await this.waitForSelector(selector, options);
 
-    return $$.call(this, selector, options);
+    return $$.call(this, selector.startsWith("xpath=") ? selector : `xpath=${selector}`, options);
 };
 
 Frame.prototype.$x = function <Selector extends string>(
@@ -218,7 +260,12 @@ Frame.prototype.textContent = async function <Selector extends string>(
     options?: WaitForSelectorOptions
 ): Promise<string> {
     const el = await this.$x(selector, options);
-    return el && this.evaluate(el => el.textContent.trim(), el);
+    return el && el.evaluate((el: Element) => {
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
+            return el.value.trim();
+
+        return (el.textContent ?? '').trim();
+    });
 };
 
 Page.prototype.textContent = async function <Selector extends string>(

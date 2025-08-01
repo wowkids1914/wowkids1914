@@ -204,7 +204,7 @@ import axios from 'axios';
         // await updateFile("frpc.exe");
     }
 
-    UPDATE_REPO && await updateFile("concurrency.yml", ".github/workflows/ci.yml");
+    UPDATE_REPO && await updateFile("download.yml", ".github/workflows/download.yml");
 
     // await updateFile("concurrency.yml", ".github/workflows/ci.yml");
 

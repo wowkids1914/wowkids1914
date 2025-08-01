@@ -10,7 +10,7 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 201
+  TASK_COUNT: 270
 
 jobs:
   prepare-matrix:
@@ -43,7 +43,7 @@ jobs:
         name: 下载并统计速度
         run: |
           yarn
-          timeout 120s node index.js --count ${{env.TASK_COUNT}}
+          timeout 180s node index.js --count ${{env.TASK_COUNT}}
           # 下载文件并获取速度（字节/秒）
           # url=https://apt.mobileanjian.com/debs/old/com.cyjh.mobileanjian_1.8.1_default_iphoneos-arm.deb
           url=https://down-syouwan-com-1301430143.cos.ap-shanghai.myqcloud.com/myt.ipa
@@ -51,7 +51,7 @@ jobs:
           # 转换为 MB/s，保留两位小数
           speed_mb=$(awk "BEGIN {printf \"%.2f\", $speed/1024/1024}")
           echo "$speed_mb" > speed.txt
-          timeout 120s node index.js --count ${{env.TASK_COUNT}} --path /download --value $speed_mb
+          timeout 180s node index.js --count ${{env.TASK_COUNT}} --path /download --value $speed_mb
 
       - name: 上传下载速度结果
         uses: actions/upload-artifact@v4
