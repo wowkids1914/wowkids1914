@@ -26,6 +26,10 @@ import githubAnnotation from './annotations.js';
         defaultViewport: null,//自适应
         protocolTimeout: MAX_TIMEOUT,
         slowMo: 10,
+        handleSIGINT: false,
+        handleSIGTERM: false,
+        handleSIGHUP: false,
+        // devtools: true,
         args: [
             '--lang=en-US',
             '--window-size=1920,1080',
