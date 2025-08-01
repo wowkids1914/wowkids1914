@@ -31,6 +31,13 @@ const argv = await yargs(hideBin(process.argv))
         description: '参与者数值',
         demandOption: false,
     })
+    .option('exitDelay', {
+        alias: 'exitDelayMs',
+        type: 'number',
+        description: '屏障通过后安全退出的延迟时间（毫秒）',
+        default: 2000,
+        demandOption: false,
+    })
     .help()
     .argv;
 
@@ -38,6 +45,7 @@ const zkConnectionString = argv.zk;
 const barrierPath = argv.path;
 const participantCount = argv.count;
 const participantValue = argv.value;
+const exitDelayMs = argv.exitDelay;
 
 const client = zookeeper.createClient(zkConnectionString);
 
@@ -149,7 +157,7 @@ client.once('connected', async () => {
             console.log('安全退出');
             client.close();
             process.exit();
-        }, 2000);
+        }, exitDelayMs);
     } catch (e) {
         console.error('屏障出错:', e);
         client.close();
