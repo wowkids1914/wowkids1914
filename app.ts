@@ -115,7 +115,7 @@ import axios from 'axios';
 
     await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
 
-    await page.click("//button[@aria-label='Open user navigation menu']");
+    await page.waitForNetworkIdle();
     logger.info("登录成功");
 
     const username = GITHUB_USERNAME;
