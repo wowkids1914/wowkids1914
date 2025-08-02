@@ -29,6 +29,10 @@ jobs:
       - name: 记录时间戳
         shell: bash
         run: |
+          echo “----------------------------”
+          echo ${{ toJson(github.event) }}
+          echo "github.event.workflow_run.run_started_at=${{github.event.workflow_run.run_started_at}}"
+
           rm -rf timestamps
           mkdir -p timestamps
           echo "$(date +%s)" > timestamps/start_${{ matrix.job_id }}.txt
