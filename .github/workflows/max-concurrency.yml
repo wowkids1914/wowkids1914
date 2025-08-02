@@ -59,6 +59,7 @@ jobs:
   concurrency-report:
     needs: concurrent-jobs
     runs-on: ubuntu-latest
+    if: always()
     steps:
       - name: 下载所有 artifact
         uses: actions/download-artifact@v4

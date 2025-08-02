@@ -47,8 +47,8 @@ jobs:
           echo "Queue time: $QUEUE_TIME seconds"
 
           if [ "$QUEUE_TIME" -gt 30 ]; then
-            echo "Queue time exceeded 30 seconds, exiting workflow."
-            exit
+            echo "::error::Queue time exceeded 30 seconds."
+            exit 1
           fi
 
       - uses: actions/checkout@v4
