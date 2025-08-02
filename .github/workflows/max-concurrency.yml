@@ -41,7 +41,7 @@ jobs:
 
           if [ "$QUEUE_TIME" -gt 20 ]; then
             echo "Queue time exceeded 20 seconds, exiting workflow."
-            exit 1
+            exit
           fi
 
           rm -rf timestamps
