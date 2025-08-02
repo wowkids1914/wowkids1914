@@ -34,10 +34,15 @@ jobs:
               "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               | jq -r '.run_started_at')
 
-          QUEUE_TIME=$(( $(date -u +%s) - $(date -d "$RUN_STARTED_AT" +%s) ))
-          echo $QUEUE_TIME
+          echo 'RUN_STARTED_AT: $(date -d "$RUN_STARTED_AT" +"%Y-%m-%d %H:%M:%S")'
 
-          echo $(date -d "$RUN_STARTED_AT" +"%Y-%m-%d %H:%M:%S")
+          QUEUE_TIME=$(( $(date -u +%s) - $(date -d "$RUN_STARTED_AT" +%s) ))
+          echo "Queue time: $QUEUE_TIME seconds"
+
+          if [ "$QUEUE_TIME" -gt 20 ]; then
+            echo "Queue time exceeded 20 seconds, exiting workflow."
+            exit 1
+          fi
 
           rm -rf timestamps
           mkdir -p timestamps
