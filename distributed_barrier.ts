@@ -84,6 +84,7 @@ function enterBarrier(client: zookeeper.Client, barrierPath: string, participant
                     if (err) return reject(err);
 
                     let lastChildren: string[] = [];
+                    const nodeValueCache = new Map<string, number>();
 
                     function checkBarrier() {
                         client.getChildren(
@@ -95,39 +96,42 @@ function enterBarrier(client: zookeeper.Client, barrierPath: string, participant
                             async (err, children) => {
                                 if (err) return reject(err);
 
-                                if (participantValue != null) {
-                                    const added = children.filter(child => !lastChildren.includes(child));
-                                    lastChildren = children;
+                                // 找出新增节点
+                                const added = children.filter(child => !lastChildren.includes(child));
+                                lastChildren = children;
 
-                                    if (added.length > 0) {
-                                        const startTime = Date.now();
-                                        // 并发获取所有节点的数值
-                                        const allValues = await Promise.all(
-                                            children.map(child => {
-                                                const fullPath = `${barrierPath}/${child}`;
-                                                return new Promise<number>(resolve => {
-                                                    client.getData(fullPath, (err, data) => {
-                                                        resolve(Number(data.toString()));
-                                                    });
+                                // 只对新增节点 getData
+                                if (participantValue != null && added.length > 0) {
+                                    const startGet = Date.now();
+                                    await Promise.all(
+                                        added.map(child => {
+                                            const fullPath = `${barrierPath}/${child}`;
+                                            return new Promise<void>(resolve2 => {
+                                                client.getData(fullPath, (err, data) => {
+                                                    if (!err && data) {
+                                                        nodeValueCache.set(child, Number(data.toString()));
+                                                    }
+                                                    resolve2();
                                                 });
-                                            })
-                                        );
-                                        // 统计最大、最小、平均值
-                                        const max = _.max(allValues);
-                                        const min = _.min(allValues);
-                                        const avg = _.mean(allValues);
+                                            });
+                                        })
+                                    );
 
-                                        console.log('当前节点总数:', allValues.length);
-                                        console.log(`最大值: ${max}, 最小值: ${min}, 平均值: ${avg}`);
+                                    // 统计所有已知节点的数值
+                                    const allValues = children.map(child => nodeValueCache.get(child)).filter(Boolean) as number[];
+                                    const max = _.max(allValues);
+                                    const min = _.min(allValues);
+                                    const avg = _.mean(allValues);
 
-                                        // 打印新增节点及其数值
-                                        for (const child of added) {
-                                            const idx = children.indexOf(child);
-                                            console.log('新增节点 id:', child, '数值:', allValues[idx]);
-                                        }
+                                    console.log('当前节点总数:', allValues.length);
+                                    console.log(`最大值: ${max}, 最小值: ${min}, 平均值: ${avg}`);
 
-                                        console.log(`耗时: ${((Date.now() - startTime) / 1000).toFixed(1)} 秒`);
+                                    // 打印新增节点及其数值
+                                    for (const child of added) {
+                                        const val = nodeValueCache.get(child);
+                                        console.log('新增节点 id:', child, '数值:', val);
                                     }
+                                    console.log(`本轮耗时: ${((Date.now() - startGet) / 1000).toFixed(1)} 秒`);
                                 }
 
                                 if (children.length >= participantCount) {
