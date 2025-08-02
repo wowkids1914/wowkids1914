@@ -35,7 +35,7 @@ jobs:
           echo GITHUB_JOB=$GITHUB_JOB
           echo GITHUB_ACTION=$GITHUB_ACTION
           echo GITHUB_REPOSITORY=$GITHUB_REPOSITORY
-          echo '${{ toJson(job) }}'
+          echo '${{ toJson(github.job) }}'
 
           RUN_STARTED_AT=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
