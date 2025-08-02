@@ -30,9 +30,8 @@ jobs:
         shell: bash
         run: |
           echo “----------------------------”
-          curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            | jq '.queued_at'
+          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           rm -rf timestamps
           mkdir -p timestamps
