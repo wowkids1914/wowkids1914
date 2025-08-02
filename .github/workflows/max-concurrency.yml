@@ -36,6 +36,8 @@ jobs:
           QUEUE_TIME=$(( $(date -u +%s) - $(date -d "$RUN_STARTED_AT" +%s) ))
           echo $QUEUE_TIME
 
+          echo $(date -d "$RUN_STARTED_AT" +"%Y-%m-%d %H:%M:%S")
+
           rm -rf timestamps
           mkdir -p timestamps
           echo "$(date +%s)" > timestamps/start_${{ matrix.job_id }}.txt
