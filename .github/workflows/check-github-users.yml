@@ -42,7 +42,7 @@ jobs:
           echo "有效项数: $filtered_count"
 
           if [ "$filtered_count" -gt 0 ]; then
-            jq -s '.' "$tmpfile" > data.json
+            jq -s --indent 4 '.' "$tmpfile" > data.json
           else
             echo '[]' > data.json
           fi

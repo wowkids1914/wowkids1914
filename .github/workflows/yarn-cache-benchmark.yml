@@ -1,0 +1,84 @@
+name: Yarn Cache Benchmark
+
+on:
+#   push:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cache: [true, false]
+    steps:
+      - name: 记录 Job 开始时间
+        run: |
+          echo 
+          echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 记录缓存恢复开始时间
+        run: echo "RESTORE_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 恢复 Yarn 缓存（如启用）
+        if: matrix.cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: 记录缓存恢复结束时间
+        run: echo "RESTORE_END=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 安装依赖计时开始
+        run: echo "INSTALL_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 安装依赖
+        run: yarn install
+
+      - name: 安装依赖计时结束
+        run: echo "INSTALL_END=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 编译计时开始
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 编译项目
+        run: yarn build
+
+      - name: 编译计时结束
+        run: echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 保存缓存开始
+        run: echo "SAVE_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 保存 Yarn 缓存（如启用）
+        if: matrix.cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: 保存缓存结束
+        run: echo "SAVE_END=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 统计总耗时和各环节耗时
+        run: |
+          JOB_END=$(date +%s)
+          echo "::notice title=总耗时:: $((JOB_END - JOB_START)) 秒"
+          echo "::notice title=缓存恢复耗时:: $((RESTORE_END - RESTORE_START)) 秒"
+          echo "::notice title=依赖安装耗时:: $((INSTALL_END - INSTALL_START)) 秒"
+          echo "::notice title=编译耗时:: $((BUILD_END - BUILD_START)) 秒"
+          if [ ! -z "$SAVE_END" ] && [ ! -z "$SAVE_START" ]; then
+            echo "::notice title=缓存保存耗时:: $((SAVE_END - SAVE_START)) 秒"
+          fi

@@ -1,0 +1,77 @@
+name: Matrix Max Concurrency Control
+
+on:
+  push:
+    paths:
+      - '.github/workflows/matrix-max-concurrency-control.yml'
+  workflow_dispatch:
+
+jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      ids: ${{ steps.set-matrix.outputs.ids }}
+      matrix_ready_at: ${{ steps.set-matrix.outputs.matrix_ready_at }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          count=20
+          ids=$(jq -c -n --argjson n "$count" '[range(1; $n+1)]')
+          echo "ids=$ids" >> $GITHUB_OUTPUT
+
+  concurrent-jobs:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      max-parallel: 20
+      fail-fast: false
+      matrix:
+        job_id: ${{ fromJson(needs.prepare-matrix.outputs.ids) }}
+
+    steps:
+      - name: 记录开始时间
+        id: start
+        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: 检查首个完成时间（第一次 restore）
+        id: check_time
+        uses: actions/cache@v3
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}
+
+      - name: 判断是否需要退出
+        if: steps.check_time.outputs.cache-hit == 'true'
+        run: |
+          first_done=$(cat matrix_first_finished_time.txt)
+          my_start=${{ steps.start.outputs.start_time }}
+          echo "First: $first_done, Mine: $my_start"
+          if [ "$my_start" -gt "$first_done" ]; then
+            echo "Job started after first finished, exiting."
+            exit 0
+          fi
+
+      - name: 主要任务（模拟耗时）
+        run: |
+          echo "Processing ${{ matrix.job_id }}"
+          sleep $((RANDOM % 15 + 5))
+
+      - name: 再次检查首个完成时间（第二次 restore）
+        id: double_check
+        uses: actions/cache@v3
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}
+
+      - name: 保存首个完成时间
+        if: steps.double_check.outputs.cache-hit != 'true'
+        run: date +%s > matrix_first_finished_time.txt
+
+      - name: 缓存首个完成时间
+        if: steps.double_check.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}

