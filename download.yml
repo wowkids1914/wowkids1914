@@ -78,7 +78,9 @@ jobs:
 
           # Alibaba
           # IP="80ym.com"
-          IP="45.249.209.34"
+          # IP="45.249.209.34"
+          # IP="www.enk7h.vip"
+          IP=“8.153.68.92”
           TIMEOUT=2
 
           # Cloudflare
