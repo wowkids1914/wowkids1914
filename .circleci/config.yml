@@ -94,7 +94,7 @@ jobs:
             netsh interface portproxy add v4tov4 listenport=1234 listenaddress=0.0.0.0 connectport=3389 connectaddress=127.0.0.1
             Start-Process -FilePath "frpc" -ArgumentList "-c frpc.toml" -NoNewWindow
 
-            choco install googlechrome -y
+            choco install googlechrome --ignore-checksums -y
 
             while ($true) {
                 Write-Output ("当前时间：" + (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
