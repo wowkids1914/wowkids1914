@@ -12,9 +12,7 @@ env:
 
 jobs:
   concurrent-jobs:
-    runs-on:
-      group: ubuntu-runners
-      labels: ubuntu-20.04-16core
+    runs-on: macos-latest-large
     # strategy:
     #   max-parallel: 20
     #   matrix:
