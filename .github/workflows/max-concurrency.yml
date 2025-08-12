@@ -21,7 +21,9 @@ env:
 
 jobs:
   concurrent-jobs:
-    runs-on: ${{ inputs.os }}
+    runs-on:
+      group: ubuntu-runners
+      labels: ubuntu-20.04-16core
     strategy:
       max-parallel: 20
       matrix:
