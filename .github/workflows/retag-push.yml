@@ -22,8 +22,6 @@ jobs:
       DOCKER_PASSWORD: au4t4LY8PQmbfrsMp3UOZ5O3_eM
 
     steps:
-      - uses: actions/checkout@v4
-
       - uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKER_USERNAME }}
