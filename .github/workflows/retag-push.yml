@@ -16,6 +16,7 @@ jobs:
       DOCKER_USERNAME: paulojsmedeiros
       DOCKER_PASSWORD: YPH8DeGGVkFkFXmf91z88FcyoKs
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/mysql-retag
         with:
           force: ${{ inputs.force }}
