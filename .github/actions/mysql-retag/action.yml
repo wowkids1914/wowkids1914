@@ -13,6 +13,7 @@ runs:
         password: dckr_pat_${{ env.DOCKER_PASSWORD }}
 
     - name: Retag and Push Image (skip if exists unless force)
+      shell: bash
       run: |
         TARGET_IMAGE="${{ env.DOCKER_USERNAME }}/mysql:${{ github.ref_name }}"
         FORCE="${{ github.event.inputs.force }}"
@@ -43,6 +44,7 @@ post:
   using: "composite"
   steps:
     - name: 测试
+      shell: bash
       run: 
         echo hahaha
         sleep 20s
