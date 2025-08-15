@@ -38,7 +38,7 @@ jobs:
             if [ "${FORCE}" = "true" ]; then
               echo "镜像 ${TARGET_IMAGE} 已存在，但 force=true，继续重新 tag 并推送。"
             else
-              echo "镜像 ${TARGET_IMAGE} 已存在，未启用 force，跳过。"
+              echo "::notice::镜像 ${TARGET_IMAGE} 已存在，未启用 force，跳过。"
               exit 0
             fi
           else
