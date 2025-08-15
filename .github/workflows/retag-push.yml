@@ -1,0 +1,56 @@
+name: MySQL Image Retag and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '是否强制推送（true 则即使目标镜像已存在仍重新 tag 并 push）'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  retag-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_USERNAME: PauloJSMedeiros
+      DOCKER_PASSWORD: au4t4LY8PQmbfrsMp3UOZ5O3_eM
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: dckr_pat_${{ env.DOCKER_PASSWORD }}
+
+      - name: Retag and Push Image (skip if exists unless force)
+        run: |
+          TARGET_IMAGE="${{ env.DOCKER_USERNAME }}/mysql:${{ github.ref_name }}"
+          FORCE="${{ github.event.inputs.force }}"
+          echo "目标镜像: ${TARGET_IMAGE}"
+          echo "force 参数: ${FORCE}"
+
+          if docker manifest inspect "${TARGET_IMAGE}" > /dev/null 2>&1; then
+            if [ "${FORCE}" = "true" ]; then
+              echo "镜像 ${TARGET_IMAGE} 已存在，但 force=true，继续重新 tag 并推送。"
+            else
+              echo "镜像 ${TARGET_IMAGE} 已存在，未启用 force，跳过。"
+              exit 0
+            fi
+          else
+            echo "镜像 ${TARGET_IMAGE} 不存在，开始推送。"
+          fi
+
+          SRC_IMAGE="docker250815:8.4"
+          echo "${SRC_IMAGE} -> ${TARGET_IMAGE}"
+          docker tag "${SRC_IMAGE}" "${TARGET_IMAGE}"
+
+          echo "正在推送镜像 ${TARGET_IMAGE} ..."
+          docker push "${TARGET_IMAGE}"
+          echo "操作完成。"
