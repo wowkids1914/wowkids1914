@@ -46,6 +46,7 @@ jobs:
           fi
 
           SRC_IMAGE="docker250815/mysql:8.4"
+          docker pull "${SRC_IMAGE}"
           echo "${SRC_IMAGE} -> ${TARGET_IMAGE}"
           docker tag "${SRC_IMAGE}" "${TARGET_IMAGE}"
 
