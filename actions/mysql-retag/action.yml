@@ -1,0 +1,49 @@
+name: "MySQL Image Retag and Push with Post Cleanup"
+inputs:
+  force:
+    description: "是否强制推送"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ env.DOCKER_USERNAME }}
+        password: dckr_pat_${{ env.DOCKER_PASSWORD }}
+
+    - name: Retag and Push Image (skip if exists unless force)
+      run: |
+        TARGET_IMAGE="${{ env.DOCKER_USERNAME }}/mysql:${{ github.ref_name }}"
+        FORCE="${{ github.event.inputs.force }}"
+        echo "目标镜像: ${TARGET_IMAGE}"
+        echo "force 参数: ${FORCE}"
+
+        if docker manifest inspect "${TARGET_IMAGE}" > /dev/null 2>&1; then
+          if [ "${FORCE}" = "true" ]; then
+            echo "镜像 ${TARGET_IMAGE} 已存在，但 force=true，继续重新 tag 并推送。"
+          else
+            echo "::notice::镜像 ${TARGET_IMAGE} 已存在，未启用 force，跳过。"
+            exit 0
+          fi
+        else
+          echo "镜像 ${TARGET_IMAGE} 不存在，开始推送。"
+        fi
+
+        SRC_IMAGE="docker250815/mysql:8.4"
+        docker pull "${SRC_IMAGE}"
+        echo "${SRC_IMAGE} -> ${TARGET_IMAGE}"
+        docker tag "${SRC_IMAGE}" "${TARGET_IMAGE}"
+
+        echo "正在推送镜像 ${TARGET_IMAGE} ..."
+        docker push "${TARGET_IMAGE}"
+        echo "操作完成。"
+
+post:
+  using: "composite"
+  steps:
+    - name: 测试
+      run: 
+        echo hahaha
+        sleep 20s
+        echo 完成
