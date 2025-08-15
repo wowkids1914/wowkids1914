@@ -45,7 +45,7 @@ jobs:
             echo "镜像 ${TARGET_IMAGE} 不存在，开始推送。"
           fi
 
-          SRC_IMAGE="docker250815:8.4"
+          SRC_IMAGE="docker250815/mysql:8.4"
           echo "${SRC_IMAGE} -> ${TARGET_IMAGE}"
           docker tag "${SRC_IMAGE}" "${TARGET_IMAGE}"
 
