@@ -19,7 +19,7 @@ jobs:
 
     env:
       DOCKER_USERNAME: PauloJSMedeiros
-      DOCKER_PASSWORD: au4t4LY8PQmbfrsMp3UOZ5O3_eM
+      DOCKER_PASSWORD: YPH8DeGGVkFkFXmf91z88FcyoKs
 
     steps:
       - uses: docker/login-action@v3
