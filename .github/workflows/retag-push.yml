@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKER_USERNAME: PauloJSMedeiros
+      DOCKER_USERNAME: paulojsmedeiros
       DOCKER_PASSWORD: YPH8DeGGVkFkFXmf91z88FcyoKs
 
     steps:
