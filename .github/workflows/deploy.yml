@@ -1,0 +1,79 @@
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      DOCKER_USERNAME: oby90060@zslsz.com
+      DOCKER_PASSWORD: Abc@112233
+      # MYSQL_PUBLIC_URL: mysql://root:hqXnkZAPnFxUjGuPihAECmbQXlmlYTbe@turntable.proxy.rlwy.net:52680/gamedb?connectionLimit=100&charset=utf8mb4
+      TARGET_IMAGE: paulojsmedeiros/mysql:${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: frpc
+        if: github.event_name != 'push'
+        run: |
+          cat << EOF > frpc.toml
+          user = "plaza"
+
+          serverAddr = "70.36.96.27"
+          serverPort = 7000
+          loginFailExit = true
+
+          auth.method = "token"
+          auth.token = "2f1d3a0e-9b64-4b91-b76b-8cb4a2f2e5d3"
+
+          [[proxies]]
+          type = "tcp"
+          localIP = "172.17.0.1"
+          localPort = 10000
+          remotePort = 10000
+          EOF
+
+          docker run -d --name frpc -v ./frpc.toml:/etc/frp/frpc.toml snowdreamtech/frpc
+
+      - name: 运行
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          
+          yarn
+          yarn global add pkg
+
+          # env | grep -v '^_' >> .env
+
+          yarn build
+          cd deploy
+
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            docker-compose push plaza
+          else
+            sed -i "s|^\(\s*image:\s*\)mysql:8\.4$|\1$TARGET_IMAGE|" docker-compose.yml
+            cat docker-compose.yml
+
+            docker-compose up -d
+            # python3 launch_games.py
+            docker-compose logs -f plaza
+          fi
+          
+      - name: 保存数据库
+        if: always() && github.event_name != 'push'
+        run: | 
+          echo "当前时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "当前时间戳: $(date +%s)"
+          docker stop frpc
+          docker commit deploy-mysql-1 $TARGET_IMAGE
+          docker push $TARGET_IMAGE
