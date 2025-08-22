@@ -8,7 +8,7 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 1160
+  TASK_COUNT: 580
 
 jobs:
   prepare-matrix:
@@ -78,7 +78,7 @@ jobs:
 
           # Alibaba
           # IP="80ym.com" # 8.210.147.180
-          IP="47.106.71.81"
+          IP="47.83.120.208"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
           TIMEOUT=1
