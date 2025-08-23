@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          count=20
+          count=5
           ids=$(jq -c -n --argjson n "$count" '[range(1; $n+1)]')
           echo "ids=$ids" >> $GITHUB_OUTPUT
 
@@ -78,7 +78,7 @@ jobs:
 
           # Alibaba
           # IP="80ym.com" # 8.210.147.180
-          IP="47.83.120.208"
+          IP="47.112.192.162"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
           TIMEOUT=1
