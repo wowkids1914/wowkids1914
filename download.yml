@@ -78,10 +78,10 @@ jobs:
 
           # Alibaba
           # IP="80ym.com" # 8.210.147.180
-          IP="43.167.226.3"
+          IP="117.68.24.84"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
-          TIMEOUT=1
+          TIMEOUT=2
 
           # Cloudflare
           # IP="www.gname.com"
