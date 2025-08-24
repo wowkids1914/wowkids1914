@@ -79,7 +79,7 @@ jobs:
 
           # Alibaba
           # IP="80ym.com" # 8.210.147.180
-          IP="43.132.105.214"
+          IP="39.108.48.240"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
           TIMEOUT=3
