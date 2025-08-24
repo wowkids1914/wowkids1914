@@ -8,7 +8,7 @@ concurrency:
 
 env:
   TZ: Asia/Shanghai
-  TASK_COUNT: 1160
+  TASK_COUNT: 850
 
 jobs:
   prepare-matrix:
