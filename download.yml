@@ -81,7 +81,7 @@ jobs:
           IP="117.68.24.84"
           # IP="154.89.50.218" # www.enk7h.vip
           # IP="ngk86.vip"
-          TIMEOUT=2
+          TIMEOUT=3
 
           # Cloudflare
           # IP="www.gname.com"
