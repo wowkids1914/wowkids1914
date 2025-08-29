@@ -71,6 +71,7 @@ jobs:
               echo "请求成功"
           else
               echo "请求失败，状态码：$status"
+              echo USERNAME=$USERNAME
               exit 1
           fi
 
