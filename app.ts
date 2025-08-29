@@ -132,6 +132,7 @@ import githubAnnotation from './annotations.js';
     if (verifyButton) {
         await verifyButton.click();
         await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
+        await page.waitForNavigation();
     }
 
     const username = GITHUB_USERNAME;
