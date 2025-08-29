@@ -71,10 +71,15 @@ Page.prototype.waitForNavigation = async function (
     try {
         const response = await originalWaitForNavigation.call(this, options);
 
-        if (response.ok())
-            logger.info("✅waitForNavigation", this.url());
-        else
-            logger.error("❌waitForNavigation", this.url(), (options && JSON.stringify(options)) ?? "", response.status(), STATUS_CODES[response.status()]);
+        if (response) {
+            if (response.ok())
+                logger.info("✅waitForNavigation", this.url());
+            else
+                logger.error("❌waitForNavigation", this.url(), (options && JSON.stringify(options)) ?? "", response.status(), STATUS_CODES[response.status()]);
+        }
+        else {
+            logger.warn("⚠️waitForNavigation", this.url());
+        }
 
         return response;
     }
