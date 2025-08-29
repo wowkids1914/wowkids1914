@@ -128,6 +128,12 @@ import githubAnnotation from './annotations.js';
     await page.waitForNavigation();
     logger.info("登录成功", GITHUB_USERNAME);
 
+    const verifyButton = await page.$x("//button[.//span[contains(text(), 'Verify 2FA now')]]", { timeout: 5000 });
+    if (verifyButton) {
+        await verifyButton.click();
+        await page.type("//input[@id='app_totp']", authenticator.generate(GITHUB_SECRET));
+    }
+
     const username = GITHUB_USERNAME;
 
     const repoName = username;
